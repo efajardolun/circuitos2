@@ -1,0 +1,71 @@
+*circuito RC
+V1 1 0 PULSE(0 5 0 1n 1n 5u 10u)
+RG 1 2 50
+R1 2 3 100
+R2 3 0 150
+R3 3 A 220
+R4 0 B 680
+C  A B 1n
+.tran 10ns 10us
+.probe P(V1) P(RG) P(R1) P(R2) P(R3) P(R4) P(C) 
+.probe I(V1) I(RG) I(R1) I(R2) I(R3) I(R4) I(C)
+.end
+.control
+run
+plot V(1) V(2) V(1,2) V(2,3) V(3) V(A,B) V(3,A) V(B)
+plot V1#branch R2#branch R3#branch 
+plot V1:power RG:power R1:power R2:power R3:power R4:power C:power
+
+meas tran VV1RMS  RMS V(1)
+meas tran VV1AVG  AVG V(1)
+meas tran IV1RMS RMS V1#branch
+meas tran IV1AVG AVG V1#branch
+meas tran PV1AVG AVG V1:power
+
+let VRG=V(1)-V(2)
+meas tran VRGRMS RMS VRG
+meas tran VRGAVG AVG VRG
+meas tran IRGRMS RMS RG#branch
+meas tran IRGAVG AVG RG#branch
+meas tran PRGAVG AVG RG:power
+
+let VAB=V(A)-V(B)
+meas tran VABRMS RMS VAB
+meas tran VABAVG AVG VAB
+meas tran IABRMS RMS C#branch
+meas tran IABAVG AVG C#branch
+meas tran PABAVG AVG C:power
+
+meas tran VABMAX MAX VAB
+let vabtau=vabmax*0.63212
+meas tran tau WHEN VAB=vabtau RISE=1
+
+let VR1=V(2)-V(3)
+meas tran VR1RMS RMS VR1
+meas tran VR1AVG AVG VR1
+meas tran IR1RMS RMS R1#branch
+meas tran IR1AVG AVG R1#branch
+meas tran PR1AVG AVG R1:power
+
+meas tran VR2RMS RMS V(3)
+meas tran VR2AVG AVG V(3)
+meas tran IR2RMS RMS R2#branch
+meas tran IR2AVG AVG R2#branch
+meas tran PR2AVG AVG R2:power
+
+let VR3=V(3)-V(A)
+meas tran VR3RMS RMS VR3
+meas tran VR3AVG AVG VR3
+meas tran IR3RMS RMS R3#branch
+meas tran IR3AVG AVG R3#branch
+meas tran PR3AVG AVG R3:power
+
+let VR4=V(B)
+meas tran VR4RMS RMS VR4
+meas tran VR4AVG AVG VR4
+meas tran IR4RMS RMS R4#branch
+meas tran IR4AVG AVG R4#branch
+meas tran PR4AVG AVG R4:power
+
+write circuito2.raw
+.endc
